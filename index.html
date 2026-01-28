@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tipificación Manual - Hospital</title>
+  <title>Tipificación Manual - Hospital Maria Auxiliadora</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,7 +23,7 @@
     
     .container {
       background: white;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 32px;
       max-width: 500px;
       width: 100%;
@@ -35,10 +35,31 @@
       margin-bottom: 32px;
     }
     
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .logo svg {
+      width: 50px;
+      height: 50px;
+    }
+    
     .header h1 {
       font-size: 24px;
-      color: #1f2d3d;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 8px;
+      font-weight: 700;
     }
     
     .header p {
@@ -99,7 +120,7 @@
     
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
     }
     
     .btn:active {
@@ -158,24 +179,50 @@
     
     .quick-btn {
       padding: 6px 12px;
-      background: #edf2f7;
-      border: 1px solid #cbd5e0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
       font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
+      color: #667eea;
+      font-weight: 500;
     }
     
     .quick-btn:hover {
-      background: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border-color: #667eea;
+    }
+    
+    .powered-by {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px solid #f7fafc;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+    
+    .powered-by a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <div class="logo">
+        <!-- Logo SVG de Kinetix -->
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 10L70 25L70 55L50 70L30 55L30 25L50 10Z" fill="white" opacity="0.9"/>
+          <circle cx="50" cy="40" r="8" fill="#667eea"/>
+          <path d="M50 50L65 35M50 50L35 35" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M50 50L50 65" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
       <h1>📋 Tipificación Manual</h1>
       <p>Hospital Maria Auxiliadora de Mosquera</p>
     </div>
@@ -265,11 +312,15 @@
         💾 Guardar Tipificación
       </button>
     </form>
+    
+    <div class="powered-by">
+      Desarrollado por <a href="https://kinetix-team-dev.vercel.app" target="_blank">Kinetix Team Dev</a>
+    </div>
   </div>
 
   <script>
     // ============================================
-    // CONFIGURACIÓN - CAMBIA ESTA URL
+    // CONFIGURACIÓN - CAMBIA ESTA URL POR LA DE TU N8N
     // ============================================
     const N8N_WEBHOOK_URL = 'https://TU-N8N-URL.com/webhook/tipificacion-manual';
     
@@ -291,7 +342,7 @@
     }
     
     // ============================================
-    // ENVIAR FORMULARIO
+    // ENVIAR FORMULARIO A N8N
     // ============================================
     document.getElementById('tipificacion-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -300,7 +351,7 @@
       submitBtn.disabled = true;
       submitBtn.textContent = '⏳ Guardando...';
       
-      // Preparar datos
+      // Preparar datos para n8n
       const payload = {
         remote_jid: document.getElementById('remote_jid').value,
         nombre_paciente: document.getElementById('nombre_paciente').value || null,
@@ -319,24 +370,35 @@
       try {
         const response = await fetch(N8N_WEBHOOK_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(payload)
         });
         
         const result = await response.json();
         
         if (response.ok) {
-          showAlert('✅ Tipificación guardada correctamente', 'success');
+          showAlert('✅ Tipificación guardada correctamente en la base de datos', 'success');
+          
+          // Limpiar formulario
           document.getElementById('tipificacion-form').reset();
         } else {
-          throw new Error(result.message || 'Error al guardar');
+          throw new Error(result.message || 'Error al guardar la tipificación');
         }
       } catch (error) {
-        showAlert('❌ Error: ' + error.message, 'error');
+        console.error('Error:', error);
+        showAlert('❌ Error al guardar: ' + error.message, 'error');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '💾 Guardar Tipificación';
       }
+    });
+    
+    // Auto-rellenar fecha de hoy por defecto
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      // No auto-rellenar, dejarlo opcional
     });
   </script>
 </body>
