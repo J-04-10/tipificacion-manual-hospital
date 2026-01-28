@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tipificación Manual - Hospital</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      color: #1f2d3d;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: #718096;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+    
+    .required {
+      color: #e53e3e;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+    }
+    
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+    
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+    
+    .quick-select {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    
+    .quick-btn {
+      padding: 6px 12px;
+      background: #edf2f7;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .quick-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Tipificación Manual</h1>
+      <p>Hospital Maria Auxiliadora de Mosquera</p>
+    </div>
+    
+    <div id="alert" class="alert"></div>
+    
+    <form id="tipificacion-form">
+      <!-- DATOS DEL PACIENTE -->
+      <div class="form-group">
+        <label>WhatsApp del Paciente <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="remote_jid" 
+          placeholder="Ej: 573223956360" 
+          required
+          pattern="[0-9]+"
+          title="Solo números, sin símbolos">
+      </div>
+      
+      <div class="form-group">
+        <label>Nombre del Paciente</label>
+        <input 
+          type="text" 
+          id="nombre_paciente" 
+          placeholder="Ej: Juan Pérez">
+      </div>
+      
+      <!-- RESULTADO -->
+      <div class="form-group">
+        <label>Resultado de la Gestión <span class="required">*</span></label>
+        <select id="resultado_asesor" required>
+          <option value="">Seleccione...</option>
+          <option value="AGENDADA">✅ Cita Agendada</option>
+          <option value="SIN_AGENDA">❌ Sin Agenda Disponible</option>
+          <option value="AUTORIZACION_VENCIDA">⏰ Autorización Vencida</option>
+          <option value="REMITIDO">🏥 Remitido a Otra Institución</option>
+          <option value="NO_AUTORIZADO">🚫 Servicio No Autorizado</option>
+          <option value="REAGENDADA">🔄 Cita Reagendada</option>
+          <option value="CANCELADA_PACIENTE">👤 Cancelada por Paciente</option>
+          <option value="OTRO">📝 Otro</option>
+        </select>
+      </div>
+      
+      <!-- DETALLES DE LA CITA (opcional) -->
+      <div class="form-group">
+        <label>Especialidad</label>
+        <input 
+          type="text" 
+          id="especialidad" 
+          placeholder="Ej: Cardiología, Medicina General">
+        <div class="quick-select">
+          <button type="button" class="quick-btn" onclick="setEspecialidad('Medicina General')">Medicina General</button>
+          <button type="button" class="quick-btn" onclick="setEspecialidad('Cardiología')">Cardiología</button>
+          <button type="button" class="quick-btn" onclick="setEspecialidad('Pediatría')">Pediatría</button>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Fecha de Cita</label>
+        <input type="date" id="fecha_cita">
+      </div>
+      
+      <div class="form-group">
+        <label>Hora de Cita</label>
+        <input type="time" id="hora_cita">
+      </div>
+      
+      <!-- ASESOR -->
+      <div class="form-group">
+        <label>Tu Nombre (Asesor) <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="asesor_nombre" 
+          placeholder="Ej: Ana García"
+          required>
+      </div>
+      
+      <!-- COMENTARIOS -->
+      <div class="form-group">
+        <label>Comentarios Adicionales</label>
+        <textarea 
+          id="comentarios" 
+          placeholder="Detalles adicionales de la gestión..."></textarea>
+      </div>
+      
+      <button type="submit" class="btn" id="submit-btn">
+        💾 Guardar Tipificación
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURACIÓN - CAMBIA ESTA URL
+    // ============================================
+    const N8N_WEBHOOK_URL = 'https://TU-N8N-URL.com/webhook/tipificacion-manual';
+    
+    // ============================================
+    // FUNCIONES AUXILIARES
+    // ============================================
+    function setEspecialidad(especialidad) {
+      document.getElementById('especialidad').value = especialidad;
+    }
+    
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.className = `alert alert-${type} show`;
+      alert.textContent = message;
+      
+      setTimeout(() => {
+        alert.classList.remove('show');
+      }, 5000);
+    }
+    
+    // ============================================
+    // ENVIAR FORMULARIO
+    // ============================================
+    document.getElementById('tipificacion-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Guardando...';
+      
+      // Preparar datos
+      const payload = {
+        remote_jid: document.getElementById('remote_jid').value,
+        nombre_paciente: document.getElementById('nombre_paciente').value || null,
+        tipo_documento: null,
+        documento_paciente: null,
+        resultado_asesor: document.getElementById('resultado_asesor').value,
+        asesor_nombre: document.getElementById('asesor_nombre').value,
+        especialidad: document.getElementById('especialidad').value || null,
+        fecha_cita: document.getElementById('fecha_cita').value || null,
+        hora_cita: document.getElementById('hora_cita').value || null,
+        comentarios: document.getElementById('comentarios').value || null,
+        origen_evento: 'ASESOR',
+        tipo_intencion: 'AGENDAR'
+      };
+      
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('✅ Tipificación guardada correctamente', 'success');
+          document.getElementById('tipificacion-form').reset();
+        } else {
+          throw new Error(result.message || 'Error al guardar');
+        }
+      } catch (error) {
+        showAlert('❌ Error: ' + error.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '💾 Guardar Tipificación';
+      }
+    });
+  </script>
+</body>
+</html>
